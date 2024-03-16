@@ -4,16 +4,77 @@ require "spec_helper"
 
 RSpec.describe Collection::CollectionArray do
   describe "#where" do
-    it "filters array based on given callback" do
-      array = [1, 2, 3, 4, 5]
-      result = described_class.where(array) { |v| v > 2 }
-      expect(result).to eq([3, 4, 5])
+    it "filters array based on key-value equality" do
+      array = [
+        { name: "John" },
+        { name: "Jane" },
+        { name: "Doe" }
+      ]
+      result = described_class.where(array, :name, "Jane")
+      expect(result).to eq(
+        [
+          { name: "Jane" }
+        ]
+      )
     end
 
-    it "returns empty array if callback does not match any element" do
-      array = [1, 2, 3, 4, 5]
-      result = described_class.where(array) { |v| v > 5 }
-      expect(result).to eq([])
+    it "filters array based on key-value inequality" do
+      array = [
+        { age: 20 },
+        { age: 30 },
+        { age: 40 }
+      ]
+      result = described_class.where(array, :age, "!=", 30)
+      expect(result).to eq(
+        [
+          { age: 20 },
+          { age: 40 }
+        ]
+      )
+    end
+
+    it "filters array based on numeric comparison" do
+      array = [
+        { age: 20 },
+        { age: 30 },
+        { age: 40 }
+      ]
+      result = described_class.where(array, :age, ">", 25)
+      expect(result).to eq(
+        [
+          { age: 30 },
+          { age: 40 }
+        ]
+      )
+    end
+
+    it "filters array based on string comparison" do
+      array = [
+        { name: "John" },
+        { name: "Jane" },
+        { name: "Doe" }
+      ]
+      result = described_class.where(array, :name, "LIKE", "Jo")
+      expect(result).to eq(
+        [
+          { name: "John" }
+        ]
+      )
+    end
+
+    it "filters array based on negated string comparison" do
+      array = [
+        { name: "John" },
+        { name: "Jane" },
+        { name: "Doe" }
+      ]
+      result = described_class.where(array, :name, "NOT LIKE", "Jane")
+      expect(result).to eq(
+        [
+          { name: "John" },
+          { name: "Doe" }
+        ]
+      )
     end
   end
 
@@ -53,7 +114,6 @@ RSpec.describe Collection::CollectionArray do
     context "when given an array" do
       it "returns the same array" do
         array = [1, 2, 3]
-        puts [1, 2, 3].is_a?(Array)
         expect(described_class.wrap(array)).to eq(array)
       end
     end
@@ -110,6 +170,32 @@ RSpec.describe Collection::CollectionArray do
         "1" => { "first_checkin" => "2024-03-03", "last_checkout" => "2024-03-04" }
       }
       expect(result).to eq(expected_result)
+    end
+  end
+
+  describe "#except" do
+    it "filters out specified keys from each hash in the array" do
+      array = [{ a: 1, b: 2, c: 3 }, { a: 4, b: 5, c: 6 }]
+      result = described_class.except(array, :b, :c)
+      expect(result).to eq([{ a: 1 }, { a: 4 }])
+    end
+
+    it "raises an ArgumentError when empty key list is provided" do
+      array = [{ a: 1, b: 2, c: 3 }, { a: 4, b: 5, c: 6 }]
+      expect { described_class.except(array) }.to raise_error(ArgumentError, "Empty key list")
+    end
+  end
+
+  describe "#only" do
+    it "filters in specified keys from each hash in the array" do
+      array = [{ a: 1, b: 2, c: 3 }, { a: 4, b: 5, c: 6 }]
+      result = described_class.only(array, :b, :c)
+      expect(result).to eq([{ b: 2, c: 3 }, { b: 5, c: 6 }])
+    end
+
+    it "raises an ArgumentError when empty key list is provided" do
+      array = [{ a: 1, b: 2, c: 3 }]
+      expect { described_class.only(array) }.to raise_error(ArgumentError, "Empty key list")
     end
   end
 end

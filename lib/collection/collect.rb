@@ -1,10 +1,13 @@
 # frozen_string_literal: true
 
 require_relative "collection_array"
+require_relative "hooks"
 
 module Collection
   # Set of chainable collections
   class Collect
+    extend Collection::Hooks
+
     def initialize(items)
       @items = get_arrayable_items(items)
     end
@@ -13,8 +16,12 @@ module Collection
       @items
     end
 
-    def where(&block)
-      self.class.new(Collection::CollectionArray.where(@items, &block))
+    def filter(&block)
+      self.class.new(Collection::CollectionArray.filter(@items, &block))
+    end
+
+    def where(key, *args)
+      self.class.new(Collection::CollectionArray.where(@items, key, *args))
     end
 
     def where_not_nil
@@ -26,8 +33,6 @@ module Collection
     end
 
     def key_by(key, &block)
-      raise ArgumentError, "Input must be an array of hashes" unless @items.all? { |item| item.is_a?(Hash) }
-
       Collection::CollectionArray.key_by(@items, key, &block)
     end
 
@@ -55,6 +60,20 @@ module Collection
       self.class.new(Collection::CollectionArray.map(@items, &block))
     end
 
+    def when(boolean)
+      return self if boolean == false
+
+      yield(self)
+    end
+
+    def only(*keys)
+      self.class.new(Collection::CollectionArray.only(@items, *keys))
+    end
+
+    def except(*keys)
+      self.class.new(Collection::CollectionArray.except(@items, *keys))
+    end
+
     private
 
     def get_arrayable_items(items)
@@ -62,5 +81,13 @@ module Collection
 
       items.to_a
     end
+
+    def check_hash_item
+      raise ArgumentError, "Input must be an array of hashes" unless @items.all? { |item| item.is_a?(Hash) }
+    end
+
+    # Hooks
+    before :key_by, :check_hash_item
+    before :only, :check_hash_item
   end
 end

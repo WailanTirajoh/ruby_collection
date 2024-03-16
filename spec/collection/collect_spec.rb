@@ -3,6 +3,8 @@
 require "spec_helper"
 
 RSpec.describe Collection::Collect do
+  include Collection::Helper
+
   describe "#all" do
     it "returns all items" do
       items = [1, 2, 3]
@@ -10,14 +12,45 @@ RSpec.describe Collection::Collect do
     end
   end
 
-  describe "#where" do
+  describe "#filter" do
     it "filters items based on the given block" do
       items = [1, 2, 3, 4, 5]
       result = collect(items)
-               .where { |item| item > 2 }
-               .where { |item| item < 5 }
+               .filter { |item| item > 2 }
+               .filter { |item| item < 5 }
                .all
       expect(result).to eq([3, 4])
+    end
+  end
+
+  describe "#where" do
+    context "when input is 2 arguments" do
+      it "filters items based on the equality" do
+        items = [
+          { a: 3, b: 1 },
+          { a: 1, b: 2 },
+          { a: 2, b: 3 }
+        ]
+        result = collect(items).where(:a, 3).all
+        expect(result).to eq([{ a: 3, b: 1 }])
+      end
+    end
+
+    context "when input is 3 arguments" do
+      it "filters items based on the equality" do
+        items = [
+          { a: 3, b: 1 },
+          { a: 1, b: 2 },
+          { a: 2, b: 3 }
+        ]
+        result = collect(items).where(:a, "!=", 3).all
+        expect(result).to eq(
+          [
+            { a: 1, b: 2 },
+            { a: 2, b: 3 }
+          ]
+        )
+      end
     end
   end
 
@@ -97,11 +130,13 @@ RSpec.describe Collection::Collect do
         { a: 2, b: 3 }
       ]
       result = collect(items).sort_by_key(:a).all
-      expect(result).to eq([
-                             { a: 1, b: 2 },
-                             { a: 2, b: 3 },
-                             { a: 3, b: 1 }
-                           ])
+      expect(result).to eq(
+        [
+          { a: 1, b: 2 },
+          { a: 2, b: 3 },
+          { a: 3, b: 1 }
+        ]
+      )
     end
   end
 
@@ -121,6 +156,62 @@ RSpec.describe Collection::Collect do
     end
   end
 
+  describe "#when" do
+    context "when the condition is true" do
+      it "yields to the block" do
+        items = [1, 2, 3, 4, 5]
+        result = collect(items).when(true) do |collection|
+          collection.filter { |item| item > 2 }
+        end
+        expect(result.all).to eq([3, 4, 5])
+      end
+    end
+
+    context "when the condition is false" do
+      it "does not yield to the block" do
+        items = [1, 2, 3, 4, 5]
+        result = collect(items).when(false) do |collection|
+          collection.filter { |item| item > 2 }
+        end
+        expect(result.all).to eq([1, 2, 3, 4, 5])
+      end
+    end
+  end
+
+  describe "#only" do
+    it "returns a new collection with items containing only specified keys" do
+      items = [
+        { name: "Alice", age: 30, city: "New York" },
+        { name: "Bob", age: 25, city: "Los Angeles" }
+      ]
+      result = collect(items).only(:name, :age).all
+
+      expect(result).to eq(
+        [
+          { name: "Alice", age: 30 },
+          { name: "Bob", age: 25 }
+        ]
+      )
+    end
+  end
+
+  describe "#except" do
+    it "returns a new collection with items excluding specified keys" do
+      items = [
+        { name: "Alice", age: 30, city: "New York" },
+        { name: "Bob", age: 25, city: "Los Angeles" }
+      ]
+      result = collect(items).except(:city).all
+
+      expect(result).to eq(
+        [
+          { name: "Alice", age: 30 },
+          { name: "Bob", age: 25 }
+        ]
+      )
+    end
+  end
+
   context "when it chained" do
     items = [
       { a: 3, b: 1, x: [1, 2, 3] },
@@ -132,7 +223,7 @@ RSpec.describe Collection::Collect do
     it "return correct output" do
       result = collect(items)
                .where_not_nil
-               .where { |item| item[:a] > 1 }
+               .where(:a, ">", 1)
                .append({ a: 0, b: 2 })
                .prepend({ a: 4, b: 2 })
                .sort_by_key(:a)
@@ -154,11 +245,5 @@ RSpec.describe Collection::Collect do
         ]
       )
     end
-  end
-
-  private
-
-  def collect(items)
-    Collection::Collect.new(items)
   end
 end

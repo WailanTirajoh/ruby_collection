@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative "./collect"
+require_relative "collect"
 
 module Collection
   # Expose collect

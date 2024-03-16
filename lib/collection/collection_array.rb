@@ -38,7 +38,7 @@ module Collection
       end
 
       def key_by(records, key)
-        Hash[records.map { |record| [record[key].to_s, yield(record)] }]
+        records.to_h { |record| [record[key].to_s, yield(record)] }
       end
     end
   end

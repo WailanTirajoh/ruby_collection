@@ -49,7 +49,7 @@ RSpec.describe Collection::Collect do
           { "badgenumber" => 1, "first_checkin" => "2024-03-03", "last_checkout" => "2024-03-04" }
         ]
 
-        result = Collection::Collect.new(records).key_by("badgenumber") do |record|
+        result = collect(records).key_by("badgenumber") do |record|
           {
             "first_checkin" => record["first_checkin"],
             "last_checkout" => record["last_checkout"]
@@ -67,7 +67,7 @@ RSpec.describe Collection::Collect do
     context "when input is not an array of hashes" do
       it "raises an ArgumentError" do
         non_hash_input = [1, 2, 3]
-        expect { Collection::Collect.new(non_hash_input).key_by("key") { |record| record } }
+        expect { collect(non_hash_input).key_by("key") { |record| record } }
           .to raise_error(ArgumentError, "Input must be an array of hashes")
       end
     end
@@ -121,7 +121,7 @@ RSpec.describe Collection::Collect do
     end
   end
 
-  context "chainable collection" do
+  context "when it chained" do
     items = [
       { a: 3, b: 1, x: [1, 2, 3] },
       { a: 1, b: 2, x: [] },
@@ -129,7 +129,7 @@ RSpec.describe Collection::Collect do
       nil
     ]
 
-    it "chain" do
+    it "return correct output" do
       result = collect(items)
                .where_not_nil
                .where { |item| item[:a] > 1 }

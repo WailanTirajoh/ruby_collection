@@ -12,3 +12,7 @@ gem "rspec", "~> 3.0"
 gem "rubocop", "~> 1.21"
 
 gem "debug", "~> 1.9"
+
+gem "rubocop-rspec", "~> 2.27"
+
+gem "rubocop-rake", "~> 0.6.0"

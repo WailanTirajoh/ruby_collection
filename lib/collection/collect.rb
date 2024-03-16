@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative "./collection_array"
+require_relative "collection_array"
 
 module Collection
   # Set of chainable collections

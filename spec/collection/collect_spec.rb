@@ -35,6 +35,10 @@ RSpec.describe Collection::Collect do
     it "returns the index of the first occurrence of the given value" do
       expect(collect([1, 2, 3, 4, 2]).index_of(2)).to eq(1)
     end
+
+    it "returns nil if the index is not found" do
+      expect(collect([1, 2, 3, 4, 2]).index_of(5)).to be_nil
+    end
   end
 
   describe "#key_by" do
@@ -66,6 +70,89 @@ RSpec.describe Collection::Collect do
         expect { Collection::Collect.new(non_hash_input).key_by("key") { |record| record } }
           .to raise_error(ArgumentError, "Input must be an array of hashes")
       end
+    end
+  end
+
+  describe "#sort" do
+    it "sorts items in ascending order based on provided block" do
+      items = [5, 3, 1, 4, 2]
+      result = collect(items).sort { |a, b| a <=> b }.all
+      expect(result).to eq([1, 2, 3, 4, 5])
+    end
+  end
+
+  describe "#sort_desc" do
+    it "sorts items in descending order based on provided block" do
+      items = [5, 3, 1, 4, 2]
+      result = collect(items).sort_desc { |a, b| a <=> b }.all
+      expect(result).to eq([5, 4, 3, 2, 1])
+    end
+  end
+
+  describe "#sort_by_key" do
+    it "sorts items by the specified key" do
+      items = [
+        { a: 3, b: 1 },
+        { a: 1, b: 2 },
+        { a: 2, b: 3 }
+      ]
+      result = collect(items).sort_by_key(:a).all
+      expect(result).to eq([
+                             { a: 1, b: 2 },
+                             { a: 2, b: 3 },
+                             { a: 3, b: 1 }
+                           ])
+    end
+  end
+
+  describe "#append" do
+    it "appends the value to the collection" do
+      items = [1, 2, 3]
+      result = collect(items).append(4).all
+      expect(result).to eq([1, 2, 3, 4])
+    end
+  end
+
+  describe "#prepend" do
+    it "prepends the value to the collection" do
+      items = [2, 3, 4]
+      result = collect(items).prepend(1).all
+      expect(result).to eq([1, 2, 3, 4])
+    end
+  end
+
+  context "chainable collection" do
+    items = [
+      { a: 3, b: 1, x: [1, 2, 3] },
+      { a: 1, b: 2, x: [] },
+      { a: 2, b: 3, x: [2, 3] },
+      nil
+    ]
+
+    it "chain" do
+      result = collect(items)
+               .where_not_nil
+               .where { |item| item[:a] > 1 }
+               .append({ a: 0, b: 2 })
+               .prepend({ a: 4, b: 2 })
+               .sort_by_key(:a)
+               .map do |item|
+                 {
+                   a: item[:a],
+                   b: item[:b],
+                   c: item[:a] + item[:b],
+                   x: collect(item[:x]).sort.all
+                 }
+               end
+               .all
+      expect(result).to eq(
+        [
+          { a: 0, b: 2, c: 2, x: [] },
+          { a: 2, b: 3, c: 5, x: [2, 3] },
+          { a: 3, b: 1, c: 4, x: [1, 2, 3] },
+          { a: 4, b: 2, c: 6, x: [] }
+        ]
+      )
     end
   end
 

@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 module Collection
+  class UnsupportedOperator < ArgumentError; end
+
   # filterable item using operators
   class CollectionFilter
     OPERATORS = {
@@ -19,7 +21,7 @@ module Collection
     def self.apply_operator(operator, a, b) # rubocop:disable Naming/MethodParameterName
       operator_lambda = OPERATORS[operator.upcase]
       unless operator_lambda
-        raise ArgumentError,
+        raise UnsupportedOperator,
               "Unsupported operator: #{operator}, current supported operator: #{OPERATORS.keys}"
       end
 

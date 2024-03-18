@@ -74,6 +74,10 @@ module Collection
       self.class.new(Collection::CollectionArray.except(@items, *keys))
     end
 
+    def diff(items)
+      self.class.new(Collection::CollectionArray.diff(@items, items))
+    end
+
     private
 
     def get_arrayable_items(items)

@@ -3,7 +3,7 @@
 require "spec_helper"
 
 RSpec.describe Collection::CollectionArray do
-  describe "#where" do
+  describe ".where" do
     it "filters array based on key-value equality" do
       array = [
         { name: "John" },
@@ -78,7 +78,7 @@ RSpec.describe Collection::CollectionArray do
     end
   end
 
-  describe "#where_not_nil" do
+  describe ".where_not_nil" do
     it "filters out nil values from array" do
       array = [1, nil, 3, nil, 5]
       result = described_class.where_not_nil(array)
@@ -98,7 +98,7 @@ RSpec.describe Collection::CollectionArray do
     end
   end
 
-  describe "#wrap" do
+  describe ".wrap" do
     context "when given nil value" do
       it "returns an empty array" do
         expect(described_class.wrap(nil)).to eq([])
@@ -119,7 +119,7 @@ RSpec.describe Collection::CollectionArray do
     end
   end
 
-  describe "#append" do
+  describe ".append" do
     it "appends elements to the end of the array" do
       array = [1, 2, 3]
       result = described_class.append(array, 4, 5)
@@ -127,7 +127,7 @@ RSpec.describe Collection::CollectionArray do
     end
   end
 
-  describe "#prepend" do
+  describe ".prepend" do
     it "prepends elements to the beginning of the array" do
       array = [3, 4, 5]
       result = described_class.prepend(array, 1, 2)
@@ -135,7 +135,7 @@ RSpec.describe Collection::CollectionArray do
     end
   end
 
-  describe "#map" do
+  describe ".map" do
     it "applies the block to each element of the array" do
       array = [1, 2, 3]
       result = described_class.map(array) { |x| x * 2 }
@@ -143,7 +143,7 @@ RSpec.describe Collection::CollectionArray do
     end
   end
 
-  describe "#map_with_keys" do
+  describe ".map_with_keys" do
     it "applies the block to each value of the hash and retains the keys" do
       hash = { a: 1, b: 2, c: 3 }
       result = described_class.map_with_keys(hash) { |x| x * 2 }
@@ -151,7 +151,7 @@ RSpec.describe Collection::CollectionArray do
     end
   end
 
-  describe "#key_by" do
+  describe ".key_by" do
     it "transforms attributes using a block and add key as value based on given input" do
       records = [
         { "badgenumber" => 123, "first_checkin" => "2024-03-01", "last_checkout" => "2024-03-02" },
@@ -173,7 +173,7 @@ RSpec.describe Collection::CollectionArray do
     end
   end
 
-  describe "#except" do
+  describe ".except" do
     it "filters out specified keys from each hash in the array" do
       array = [{ a: 1, b: 2, c: 3 }, { a: 4, b: 5, c: 6 }]
       result = described_class.except(array, :b, :c)
@@ -186,7 +186,7 @@ RSpec.describe Collection::CollectionArray do
     end
   end
 
-  describe "#only" do
+  describe ".only" do
     it "filters in specified keys from each hash in the array" do
       array = [{ a: 1, b: 2, c: 3 }, { a: 4, b: 5, c: 6 }]
       result = described_class.only(array, :b, :c)
@@ -196,6 +196,40 @@ RSpec.describe Collection::CollectionArray do
     it "raises an ArgumentError when empty key list is provided" do
       array = [{ a: 1, b: 2, c: 3 }]
       expect { described_class.only(array) }.to raise_error(ArgumentError, "Empty key list")
+    end
+  end
+
+  describe ".diff" do
+    it "returns the symmetric difference between two arrays" do
+      array1 = [1, 2, 3, 4]
+      array2 = [3, 4, 5, 6]
+
+      result = described_class.diff(array1, array2)
+      expect(result).to contain_exactly(1, 2, 5, 6)
+    end
+
+    it "returns an empty array if both arrays are identical" do
+      array1 = [1, 2, 3]
+      array2 = [1, 2, 3]
+
+      result = described_class.diff(array1, array2)
+      expect(result).to be_empty
+    end
+
+    it "returns the elements of the first array if the second array is empty" do
+      array1 = [1, 2, 3]
+      array2 = []
+
+      result = described_class.diff(array1, array2)
+      expect(result).to eq([1, 2, 3])
+    end
+
+    it "returns the elements of the second array if the first array is empty" do
+      array1 = []
+      array2 = [1, 2, 3]
+
+      result = described_class.diff(array1, array2)
+      expect(result).to eq([1, 2, 3])
     end
   end
 end

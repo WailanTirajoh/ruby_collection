@@ -212,6 +212,17 @@ RSpec.describe Collection::Collect do
     end
   end
 
+  describe "#diff" do
+    context "when comparing two arrays" do
+      it "returns the difference between the two arrays" do
+        items1 = [1, 2, 3, 4, 5]
+        items2 = [3, 4, 5, 6, 7]
+        result = collect(items1).diff(items2).all
+        expect(result).to eq([1, 2, 6, 7])
+      end
+    end
+  end
+
   context "when it chained" do
     items = [
       { a: 3, b: 1, x: [1, 2, 3] },

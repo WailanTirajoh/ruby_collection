@@ -64,6 +64,10 @@ module Collection
 
         array.map { |hash| hash.select { |k, _| keys.include?(k) } }
       end
+
+      def diff(array1, array2)
+        (array1 - array2) | (array2 - array1)
+      end
     end
   end
 end

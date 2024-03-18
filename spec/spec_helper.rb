@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require_relative "simplecov_helper"
 require "collection"
 require "collection/collection_array"
 

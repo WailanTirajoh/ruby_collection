@@ -4,77 +4,88 @@ require "spec_helper"
 
 RSpec.describe Collection::CollectionArray do
   describe ".where" do
-    it "filters array based on key-value equality" do
-      array = [
-        { name: "John" },
-        { name: "Jane" },
-        { name: "Doe" }
-      ]
-      result = described_class.where(array, :name, "Jane")
-      expect(result).to eq(
-        [
-          { name: "Jane" }
+    context "with an correct number of arguments" do
+      it "filters array based on key-value equality" do
+        array = [
+          { name: "John" },
+          { name: "Jane" },
+          { name: "Doe" }
         ]
-      )
-    end
+        result = described_class.where(array, :name, "Jane")
+        expect(result).to eq(
+          [
+            { name: "Jane" }
+          ]
+        )
+      end
 
-    it "filters array based on key-value inequality" do
-      array = [
-        { age: 20 },
-        { age: 30 },
-        { age: 40 }
-      ]
-      result = described_class.where(array, :age, "!=", 30)
-      expect(result).to eq(
-        [
+      it "filters array based on key-value inequality" do
+        array = [
           { age: 20 },
-          { age: 40 }
-        ]
-      )
-    end
-
-    it "filters array based on numeric comparison" do
-      array = [
-        { age: 20 },
-        { age: 30 },
-        { age: 40 }
-      ]
-      result = described_class.where(array, :age, ">", 25)
-      expect(result).to eq(
-        [
           { age: 30 },
           { age: 40 }
         ]
-      )
-    end
+        result = described_class.where(array, :age, "!=", 30)
+        expect(result).to eq(
+          [
+            { age: 20 },
+            { age: 40 }
+          ]
+        )
+      end
 
-    it "filters array based on string comparison" do
-      array = [
-        { name: "John" },
-        { name: "Jane" },
-        { name: "Doe" }
-      ]
-      result = described_class.where(array, :name, "LIKE", "Jo")
-      expect(result).to eq(
-        [
-          { name: "John" }
+      it "filters array based on numeric comparison" do
+        array = [
+          { age: 20 },
+          { age: 30 },
+          { age: 40 }
         ]
-      )
-    end
+        result = described_class.where(array, :age, ">", 25)
+        expect(result).to eq(
+          [
+            { age: 30 },
+            { age: 40 }
+          ]
+        )
+      end
 
-    it "filters array based on negated string comparison" do
-      array = [
-        { name: "John" },
-        { name: "Jane" },
-        { name: "Doe" }
-      ]
-      result = described_class.where(array, :name, "NOT LIKE", "Jane")
-      expect(result).to eq(
-        [
+      it "filters array based on string comparison" do
+        array = [
           { name: "John" },
+          { name: "Jane" },
           { name: "Doe" }
         ]
-      )
+        result = described_class.where(array, :name, "LIKE", "Jo")
+        expect(result).to eq(
+          [
+            { name: "John" }
+          ]
+        )
+      end
+
+      it "filters array based on negated string comparison" do
+        array = [
+          { name: "John" },
+          { name: "Jane" },
+          { name: "Doe" }
+        ]
+        result = described_class.where(array, :name, "NOT LIKE", "Jane")
+        expect(result).to eq(
+          [
+            { name: "John" },
+            { name: "Doe" }
+          ]
+        )
+      end
+    end
+
+    context "with an incorrect number of arguments" do
+      it "raises ArgumentError" do
+        array = [{ a: 1 }, { a: 2 }, { a: 3 }]
+
+        # Pass only one argument instead of two or three
+        expect { described_class.where(array, :a) }.to raise_error(ArgumentError, "Invalid number of arguments")
+      end
     end
   end
 

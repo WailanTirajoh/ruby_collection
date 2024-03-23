@@ -68,6 +68,57 @@ module Collection
       def diff(array1, array2)
         (array1 - array2) | (array2 - array1)
       end
+
+      def left_join(array1, array2, key1, key2)
+        return array1 if array2.count.zero?
+
+        right_index = build_index(array2, key2)
+
+        result = []
+        array1.each do |left_item|
+          right_items = right_index[left_item[key1]] || [nil_attributes(array2)]
+          merge_items(result, left_item, right_items)
+        end
+        result
+      end
+
+      def right_join(array1, array2, key1, key2)
+        left_index = build_index(array1, key1)
+
+        result = []
+        array2.each do |right_item|
+          left_items = left_index[right_item[key2]] || [nil_attributes(array1)]
+          merge_items(result, right_item, left_items)
+        end
+        result
+      end
+
+      def full_join(array1, array2, key1, key2)
+        left_join_result = left_join(array1, array2, key1, key2)
+        right_join_result = right_join(array1, array2, key1, key2)
+
+        left_join_result.concat(right_join_result).uniq
+      end
+
+      def full_outter_join(array1, array2, key1, key2)
+        full_join(array1, array2, key1, key2)
+      end
+
+      private
+
+      def build_index(array, key)
+        array.group_by { |item| item[key] }
+      end
+
+      def merge_items(result, left_item, right_items)
+        right_items.each do |right_item|
+          result << left_item.merge(right_item)
+        end
+      end
+
+      def nil_attributes(array)
+        array.first.keys.each_with_object({}) { |key, hash| hash[key] = nil }
+      end
     end
   end
 end

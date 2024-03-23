@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require "debug"
 require "spec_helper"
 
 RSpec.describe Collection::Collect do
@@ -220,6 +221,146 @@ RSpec.describe Collection::Collect do
         result = collect(items1).diff(items2).all
         expect(result).to eq([1, 2, 6, 7])
       end
+    end
+  end
+
+  describe "#left_join" do
+    let(:left_items) do
+      [
+        { id: 1, name: "Alice" },
+        { id: 2, name: "Bob" },
+        { id: 3, name: "Charlie" }
+      ]
+    end
+
+    let(:right_items) do
+      [
+        { user_id: 1, age: 30 },
+        { user_id: 2, age: 25 },
+        { user_id: 4, age: 40 }
+      ]
+    end
+
+    it "joins two arrays of hashes by specified keys" do
+      result = collect(left_items).left_join(right_items, :id, :user_id).all
+
+      expect(result).to contain_exactly(
+        { id: 1, name: "Alice", user_id: 1, age: 30 },
+        { id: 2, name: "Bob", user_id: 2, age: 25 },
+        { id: 3, name: "Charlie", user_id: nil, age: nil } # No matching entry in right_items, so attributes set to nil
+      )
+    end
+
+    it "handels left join collection" do
+      result = collect(left_items).left_join(collect(right_items), :id, :user_id).all
+
+      expect(result).to contain_exactly(
+        { id: 1, name: "Alice", user_id: 1, age: 30 },
+        { id: 2, name: "Bob", user_id: 2, age: 25 },
+        { id: 3, name: "Charlie", user_id: nil, age: nil }
+      )
+    end
+
+    it "handles right items with no matching left items" do
+      result = collect([]).left_join(right_items, :id, :user_id).all
+      expect(result).to eq([])
+    end
+  end
+
+  describe "#right_join" do
+    let(:left_items) do
+      [
+        { id: 1, name: "Alice" },
+        { id: 2, name: "Bob" },
+        { id: 3, name: "Charlie" }
+      ]
+    end
+
+    let(:right_items) do
+      [
+        { user_id: 1, age: 30 },
+        { user_id: 2, age: 25 },
+        { user_id: 4, age: 40 }
+      ]
+    end
+
+    it "performs a right outer join on items based on specified keys" do
+      result = described_class.new(left_items).right_join(right_items, :id, :user_id).all
+
+      expect(result).to contain_exactly(
+        { id: 1, name: "Alice", user_id: 1, age: 30 },
+        { id: 2, name: "Bob", user_id: 2, age: 25 },
+        { user_id: 4, age: 40, id: nil, name: nil } # Non-matching left item attributes set to nil
+      )
+    end
+
+    it "returns all items from the right array when there are no matching keys" do
+      left_items = [
+        { id: 1, name: "Alice" },
+        { id: 2, name: "Bob" }
+      ]
+      right_items = [
+        { user_id: 3, age: 30 },
+        { user_id: 4, age: 25 }
+      ]
+
+      result = described_class.new(left_items).right_join(right_items, :id, :user_id).all
+
+      expect(result).to contain_exactly(
+        { user_id: 3, age: 30, id: nil, name: nil },
+        { user_id: 4, age: 25, id: nil, name: nil }
+      )
+    end
+  end
+
+  describe ".full_join" do
+    let(:left_items) do
+      [
+        { id: 1, name: "Alice" },
+        { id: 2, name: "Bob" },
+        { id: 3, name: "Charlie" }
+      ]
+    end
+
+    let(:right_items) do
+      [
+        { user_id: 1, age: 30 },
+        { user_id: 2, age: 25 },
+        { user_id: 4, age: 40 }
+      ]
+    end
+
+    it "performs a full outer join on two arrays of hashes by specified keys" do
+      result = collect(left_items).full_join(right_items, :id, :user_id).all
+
+      expect(result).to contain_exactly(
+        { id: 1, name: "Alice", user_id: 1, age: 30 },
+        { id: 2, name: "Bob", user_id: 2, age: 25 },
+        { id: 3, name: "Charlie", user_id: nil, age: nil }, # Non-matching left item attributes set to nil
+        { user_id: 4, age: 40, id: nil, name: nil } # Non-matching right item attributes set to nil
+      )
+    end
+
+    it "returns all items from both arrays when there are no matching keys" do
+      left_items = [
+        { id: 1, name: "Alice" },
+        { id: 2, name: "Bob" },
+        { id: 5, name: "John" }
+      ]
+      right_items = [
+        { user_id: 3, age: 30 },
+        { user_id: 4, age: 25 },
+        { user_id: 5, age: 25 }
+      ]
+
+      result = collect(left_items).full_join(right_items, :id, :user_id).all
+      expect(result).to contain_exactly(
+        { id: 1, name: "Alice", user_id: nil, age: nil }, # Non-matching left item attributes set to nil
+        { id: 2, name: "Bob", user_id: nil, age: nil }, # Non-matching left item attributes set to nil
+        { id: 5, name: "John", user_id: 5, age: 25 },
+        { user_id: 3, age: 30, id: nil, name: nil }, # Non-matching right item attributes set to nil
+        { user_id: 4, age: 25, id: nil, name: nil } # Non-matching right item attributes set to nil
+      )
     end
   end
 

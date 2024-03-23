@@ -2,6 +2,7 @@
 
 require_relative "simplecov_helper"
 require "collection"
+require "collection/data_accessor"
 require "collection/collection_array"
 
 RSpec.configure do |config|

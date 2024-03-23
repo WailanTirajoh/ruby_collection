@@ -355,4 +355,15 @@ RSpec.describe Collection::CollectionArray do
       )
     end
   end
+
+  describe ".full_outter_join" do
+    let(:left_items) { [{ id: 1, name: "Alice" }, { id: 2, name: "Bob" }] }
+    let(:right_items) { [{ id: 2, age: 30 }, { id: 3, age: 25 }] }
+
+    it "calls full_join method with the correct arguments" do
+      allow(described_class).to receive(:full_join).and_return([])
+      described_class.full_outter_join(left_items, right_items, :id, :id)
+      expect(described_class).to have_received(:full_join).with(left_items, right_items, :id, :id)
+    end
+  end
 end

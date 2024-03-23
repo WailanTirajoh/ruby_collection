@@ -244,6 +244,64 @@ RSpec.describe Collection::CollectionArray do
     end
   end
 
+  describe ".inner_join" do
+    let(:left_items) do
+      [
+        { id: 1, name: "Alice" },
+        { id: 2, name: "Bob" }
+      ]
+    end
+    let(:right_items) do
+      [
+        { id: 2, age: 30 },
+        { id: 3, age: 25 }
+      ]
+    end
+
+    it "returns the inner join of two arrays based on the specified keys" do
+      result = described_class.inner_join(left_items, right_items, :id, :id)
+      expect(result).to contain_exactly({ id: 2, name: "Bob", age: 30 })
+    end
+
+    context "with multiple matching items" do
+      let(:left_items) do
+        [
+          { id: 1, name: "Alice" },
+          { id: 2, name: "Bob" },
+          { id: 3, name: "Charlie" }
+        ]
+      end
+      let(:right_items) do
+        [
+          { id: 4, age: 30 },
+          { id: 2, age: 35 },
+          { id: 3, age: 25 }
+        ]
+      end
+
+      it "returns all matching items from both arrays" do
+        result = described_class.inner_join(left_items, right_items, :id, :id)
+        expect(result).to contain_exactly(
+          { id: 2, name: "Bob", age: 35 },
+          { id: 3, name: "Charlie", age: 25 }
+        )
+      end
+    end
+  end
+
+  describe ".join" do
+    let(:left_items) { [{ id: 1, name: "Alice" }, { id: 2, name: "Bob" }] }
+    let(:right_items) { [{ id: 2, age: 30 }, { id: 3, age: 25 }] }
+
+    it "calls join method with the correct arguments" do
+      allow(described_class).to receive(:inner_join).and_return([])
+
+      described_class.join(left_items, right_items, :id, :id)
+
+      expect(described_class).to have_received(:inner_join).with(left_items, right_items, :id, :id)
+    end
+  end
+
   describe ".left_join" do
     let(:left_items) do
       [
@@ -362,7 +420,9 @@ RSpec.describe Collection::CollectionArray do
 
     it "calls full_join method with the correct arguments" do
       allow(described_class).to receive(:full_join).and_return([])
+
       described_class.full_outter_join(left_items, right_items, :id, :id)
+
       expect(described_class).to have_received(:full_join).with(left_items, right_items, :id, :id)
     end
   end

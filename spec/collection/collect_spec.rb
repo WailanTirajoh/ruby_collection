@@ -223,6 +223,51 @@ RSpec.describe Collection::Collect do
     end
   end
 
+  describe "#inner_join" do
+    let(:left_items) do
+      [
+        { id: 1, name: "Alice" },
+        { id: 2, name: "Bob" }
+      ]
+    end
+    let(:right_items) do
+      [
+        { id: 2, age: 30 },
+        { id: 3, age: 25 }
+      ]
+    end
+
+    it "returns the inner join of two arrays based on the specified keys" do
+      result = collect(left_items).inner_join(right_items, :id, :id).all
+      expect(result).to contain_exactly({ id: 2, name: "Bob", age: 30 })
+    end
+
+    context "with multiple matching items" do
+      let(:left_items) do
+        [
+          { id: 1, name: "Alice" },
+          { id: 2, name: "Bob" },
+          { id: 3, name: "Charlie" }
+        ]
+      end
+      let(:right_items) do
+        [
+          { id: 4, age: 30 },
+          { id: 2, age: 35 },
+          { id: 3, age: 25 }
+        ]
+      end
+
+      it "returns all matching items from both arrays" do
+        result = collect(left_items).inner_join(right_items, :id, :id).all
+        expect(result).to contain_exactly(
+          { id: 2, name: "Bob", age: 35 },
+          { id: 3, name: "Charlie", age: 25 }
+        )
+      end
+    end
+  end
+
   describe "#left_join" do
     let(:left_items) do
       [

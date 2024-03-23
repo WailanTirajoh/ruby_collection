@@ -69,6 +69,18 @@ module Collection
         (array1 - array2) | (array2 - array1)
       end
 
+      def join(array1, array2, key1, key2)
+        inner_join(array1, array2, key1, key2)
+      end
+
+      def inner_join(array1, array2, key1, key2)
+        array1.reject do |item1|
+          matching_items = array2.select { |item2| item1[key1] == item2[key2] }
+          matching_items.each { |matched_item| item1.merge!(matched_item) }
+          matching_items.empty?
+        end
+      end
+
       def left_join(array1, array2, key1, key2)
         return array1 if array2.count.zero?
 

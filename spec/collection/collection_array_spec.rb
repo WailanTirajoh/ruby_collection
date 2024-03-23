@@ -243,4 +243,127 @@ RSpec.describe Collection::CollectionArray do
       expect(result).to eq([1, 2, 3])
     end
   end
+
+  describe ".left_join" do
+    let(:left_items) do
+      [
+        { id: 1, name: "Alice" },
+        { id: 2, name: "Bob" },
+        { id: 3, name: "Charlie" }
+      ]
+    end
+
+    let(:right_items) do
+      [
+        { user_id: 1, age: 30 },
+        { user_id: 2, age: 25 },
+        { user_id: 4, age: 40 }
+      ]
+    end
+
+    it "joins two arrays of hashes by specified keys" do
+      result = described_class.left_join(left_items, right_items, :id, :user_id)
+
+      expect(result).to contain_exactly(
+        { id: 1, name: "Alice", user_id: 1, age: 30 },
+        { id: 2, name: "Bob", user_id: 2, age: 25 },
+        { id: 3, name: "Charlie", user_id: nil, age: nil } # No matching entry in right_items, so attributes set to nil
+      )
+    end
+
+    it "handles right items with no matching left items" do
+      result = described_class.left_join([], right_items, :id, :user_id)
+      expect(result).to eq([])
+    end
+  end
+
+  describe ".right_join" do
+    let(:left_array) do
+      [
+        { id: 1, name: "Alice" },
+        { id: 2, name: "Bob" },
+        { id: 3, name: "Charlie" }
+      ]
+    end
+
+    let(:right_array) do
+      [
+        { user_id: 1, age: 30 },
+        { user_id: 2, age: 25 },
+        { user_id: 4, age: 40 }
+      ]
+    end
+
+    it "joins two arrays of hashes by specified keys" do
+      result = described_class.right_join(left_array, right_array, :id, :user_id)
+
+      expect(result).to contain_exactly(
+        { user_id: 1, age: 30, id: 1, name: "Alice" },
+        { user_id: 2, age: 25, id: 2, name: "Bob" },
+        { user_id: 4, age: 40, id: nil, name: nil } # No matching entry in right_items, so attributes set to nil
+      )
+    end
+  end
+
+  describe ".full_join" do
+    let(:left_items) do
+      [
+        { id: 1, name: "Alice" },
+        { id: 2, name: "Bob" },
+        { id: 3, name: "Charlie" }
+      ]
+    end
+
+    let(:right_items) do
+      [
+        { user_id: 1, age: 30 },
+        { user_id: 2, age: 25 },
+        { user_id: 4, age: 40 }
+      ]
+    end
+
+    it "performs a full outer join on two arrays of hashes by specified keys" do
+      result = described_class.full_join(left_items, right_items, :id, :user_id)
+
+      expect(result).to contain_exactly(
+        { id: 1, name: "Alice", user_id: 1, age: 30 },
+        { id: 2, name: "Bob", user_id: 2, age: 25 },
+        { id: 3, name: "Charlie", user_id: nil, age: nil }, # Non-matching left item attributes set to nil
+        { user_id: 4, age: 40, id: nil, name: nil } # Non-matching right item attributes set to nil
+      )
+    end
+
+    it "returns all items from both arrays when there are no matching keys" do
+      left_items = [
+        { id: 1, name: "Alice" },
+        { id: 2, name: "Bob" },
+        { id: 5, name: "John" }
+      ]
+      right_items = [
+        { user_id: 3, age: 30 },
+        { user_id: 4, age: 25 },
+        { user_id: 5, age: 25 }
+      ]
+
+      result = described_class.full_join(left_items, right_items, :id, :user_id)
+      expect(result).to contain_exactly(
+        { id: 1, name: "Alice", user_id: nil, age: nil }, # Non-matching left item attributes set to nil
+        { id: 2, name: "Bob", user_id: nil, age: nil }, # Non-matching left item attributes set to nil
+        { id: 5, name: "John", user_id: 5, age: 25 },
+        { user_id: 3, age: 30, id: nil, name: nil }, # Non-matching right item attributes set to nil
+        { user_id: 4, age: 25, id: nil, name: nil } # Non-matching right item attributes set to nil
+      )
+    end
+  end
+
+  describe ".full_outter_join" do
+    let(:left_items) { [{ id: 1, name: "Alice" }, { id: 2, name: "Bob" }] }
+    let(:right_items) { [{ id: 2, age: 30 }, { id: 3, age: 25 }] }
+
+    it "calls full_join method with the correct arguments" do
+      allow(described_class).to receive(:full_join).and_return([])
+      described_class.full_outter_join(left_items, right_items, :id, :id)
+      expect(described_class).to have_received(:full_join).with(left_items, right_items, :id, :id)
+    end
+  end
 end

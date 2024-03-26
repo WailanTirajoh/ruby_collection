@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.2.8](https://github.com/WailanTirajoh/ruby_collection/compare/v0.2.7...v0.2.8) (2024-03-26)
+
+
+### Bug Fixes
+
+* **lint:** Lintfix ([be99af7](https://github.com/WailanTirajoh/ruby_collection/commit/be99af72b9f3a2cfadad224aff191aafb48a6d45))
+
+
+
 ## [0.2.7](https://github.com/WailanTirajoh/ruby_collection/compare/v0.2.6...v0.2.7) (2024-03-26)
 
 

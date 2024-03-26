@@ -29,7 +29,7 @@ jobs:
       - name: Install deps
         run: |
           bundle install
-      - name: Publish to RubyGems
+      - name: publish gem
         run: |
           mkdir -p $HOME/.gem
           touch $HOME/.gem/credentials

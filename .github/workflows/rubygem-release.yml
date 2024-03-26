@@ -6,8 +6,6 @@ on:
 jobs:
   release:
     runs-on: ubuntu-latest
-    env:
-      GEM_HOST_API_KEY: ${{ secrets.RUBYGEM_API_KEY }}
     steps:
       - uses: actions/checkout@v2
         with:
@@ -31,8 +29,13 @@ jobs:
       - name: Install deps
         run: |
           bundle install
-      - name: Push to rubygems.org
+      - name: Publish to RubyGems
         run: |
-          bundle exec gem release
+          mkdir -p $HOME/.gem
+          touch $HOME/.gem/credentials
+          chmod 0600 $HOME/.gem/credentials
+          printf -- "---\n:rubygems_api_key: ${GEM_HOST_API_KEY}\n" > $HOME/.gem/credentials
+          gem build *.gemspec
+          gem push *.gem
         env:
-          RUBYGEMS_API_KEY: ${{ secrets.RUBYGEM_API_KEY }}
+          GEM_HOST_API_KEY: "${{secrets.RUBYGEM_API_KEY}}"

@@ -3,12 +3,12 @@
 require_relative "lib/array_collection/version"
 
 Gem::Specification.new do |spec|
-  spec.name = "collection"
+  spec.name = "array_collection"
   spec.version = ArrayCollection::VERSION
   spec.authors = ["Wailan Tirajoh"]
   spec.email = ["wailantirajoh@gmail.com"]
 
-  spec.summary = "gem for collection"
+  spec.summary = "gem for array collection"
   spec.description = "Write a longer description or delete this line."
   spec.homepage = "https://github.com/WailanTirajoh/ruby_collection"
   spec.license = "MIT"

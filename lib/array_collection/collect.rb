@@ -3,10 +3,10 @@
 require_relative "collection_array"
 require_relative "hooks"
 
-module Collection
+module ArrayCollection
   # Set of chainable collections
   class Collect
-    extend Collection::Hooks
+    extend ArrayCollection::Hooks
 
     def initialize(items)
       @items = get_arrayable_items(items)
@@ -17,15 +17,15 @@ module Collection
     end
 
     def filter(&block)
-      self.class.new(Collection::CollectionArray.filter(@items, &block))
+      self.class.new(ArrayCollection::CollectionArray.filter(@items, &block))
     end
 
     def where(key, *args)
-      self.class.new(Collection::CollectionArray.where(@items, key, *args))
+      self.class.new(ArrayCollection::CollectionArray.where(@items, key, *args))
     end
 
     def where_not_nil
-      self.class.new(Collection::CollectionArray.where_not_nil(@items))
+      self.class.new(ArrayCollection::CollectionArray.where_not_nil(@items))
     end
 
     def index_of(value)
@@ -33,7 +33,7 @@ module Collection
     end
 
     def key_by(key, &block)
-      Collection::CollectionArray.key_by(@items, key, &block)
+      ArrayCollection::CollectionArray.key_by(@items, key, &block)
     end
 
     def sort(&block)
@@ -49,15 +49,15 @@ module Collection
     end
 
     def append(value)
-      self.class.new(Collection::CollectionArray.append(@items, value))
+      self.class.new(ArrayCollection::CollectionArray.append(@items, value))
     end
 
     def prepend(value)
-      self.class.new(Collection::CollectionArray.prepend(@items, value))
+      self.class.new(ArrayCollection::CollectionArray.prepend(@items, value))
     end
 
     def map(&block)
-      self.class.new(Collection::CollectionArray.map(@items, &block))
+      self.class.new(ArrayCollection::CollectionArray.map(@items, &block))
     end
 
     def when(boolean)
@@ -67,31 +67,31 @@ module Collection
     end
 
     def only(*keys)
-      self.class.new(Collection::CollectionArray.only(@items, *keys))
+      self.class.new(ArrayCollection::CollectionArray.only(@items, *keys))
     end
 
     def except(*keys)
-      self.class.new(Collection::CollectionArray.except(@items, *keys))
+      self.class.new(ArrayCollection::CollectionArray.except(@items, *keys))
     end
 
     def diff(items)
-      self.class.new(Collection::CollectionArray.diff(@items, items))
+      self.class.new(ArrayCollection::CollectionArray.diff(@items, items))
     end
 
     def inner_join(items, left_key, right_key)
-      self.class.new(Collection::CollectionArray.inner_join(@items, get_arrayable_items(items), left_key, right_key))
+      self.class.new(ArrayCollection::CollectionArray.inner_join(@items, get_arrayable_items(items), left_key, right_key))
     end
 
     def left_join(items, left_key, right_key)
-      self.class.new(Collection::CollectionArray.left_join(@items, get_arrayable_items(items), left_key, right_key))
+      self.class.new(ArrayCollection::CollectionArray.left_join(@items, get_arrayable_items(items), left_key, right_key))
     end
 
     def right_join(items, left_key, right_key)
-      self.class.new(Collection::CollectionArray.right_join(@items, get_arrayable_items(items), left_key, right_key))
+      self.class.new(ArrayCollection::CollectionArray.right_join(@items, get_arrayable_items(items), left_key, right_key))
     end
 
     def full_join(items, left_key, right_key)
-      self.class.new(Collection::CollectionArray.full_join(@items, get_arrayable_items(items), left_key, right_key))
+      self.class.new(ArrayCollection::CollectionArray.full_join(@items, get_arrayable_items(items), left_key, right_key))
     end
 
     private
@@ -100,7 +100,7 @@ module Collection
       case items
       when Array
         items
-      when Collection::Collect
+      when ArrayCollection::Collect
         items.all
       else
         items.to_a

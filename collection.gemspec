@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
-require_relative "lib/collection/version"
+require_relative "lib/array_collection/version"
 
 Gem::Specification.new do |spec|
   spec.name = "collection"
-  spec.version = Collection::VERSION
+  spec.version = ArrayCollection::VERSION
   spec.authors = ["Wailan Tirajoh"]
   spec.email = ["wailantirajoh@gmail.com"]
 

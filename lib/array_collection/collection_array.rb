@@ -2,7 +2,7 @@
 
 require_relative "collection_filter"
 
-module Collection
+module ArrayCollection
   # Sets of array utilities methods
   class CollectionArray
     class << self
@@ -16,7 +16,7 @@ module Collection
           array.select { |item| item[key] == value }
         elsif args.size == 3
           key, operator, value = args
-          array.select { |item| Collection::CollectionFilter.apply_operator(operator, item[key], value) }
+          array.select { |item| ArrayCollection::CollectionFilter.apply_operator(operator, item[key], value) }
         else
           raise ArgumentError, "Invalid number of arguments"
         end

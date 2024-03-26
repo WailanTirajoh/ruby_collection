@@ -9,6 +9,7 @@ The `Collection` module provides utility functions for working with arrays.
 The `Collect` class is used to create chainable collections for easy manipulation of arrays.
 
 #### Before
+
 ```ruby
 items = [
   { a: 3, b: 1, x: [1, 2, 3] },
@@ -44,6 +45,7 @@ end
 ```
 
 #### After
+
 ```ruby
 collect(items)
   .where_not_nil
@@ -67,8 +69,9 @@ collect(items)
 #### Example:
 
 ##### Filter
+
 ```ruby
-include Collection::Helper # Include collection helper to call collect only instead of Collection::collect.new
+include ArrayCollection::Helper # Include collection helper to call collect only instead of ArrayCollection::collect.new
 
 # Create a new collection
 collect([1, 2, 3, 4, 5]).filter { |item| item > 2 }.all
@@ -76,8 +79,9 @@ collect([1, 2, 3, 4, 5]).filter { |item| item > 2 }.all
 ```
 
 ##### Where
+
 ```ruby
-include Collection::Helper
+include ArrayCollection::Helper
 
 # Create a new collection
 collect([
@@ -89,6 +93,7 @@ collect([
 ```
 
 ##### Where not nil
+
 ```ruby
 result = collect([1, 2, nil, 3, 4, nil, 5])
                .where_not_nil
@@ -97,6 +102,7 @@ result = collect([1, 2, nil, 3, 4, nil, 5])
 ```
 
 ##### index_of
+
 ```ruby
 collect([1, 2, 3, 4, 2]).index_of(2)
 # => 1

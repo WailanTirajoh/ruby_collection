@@ -2,8 +2,8 @@
 
 require "spec_helper"
 
-RSpec.describe Collection::Collect do
-  include Collection::Helper
+RSpec.describe ArrayCollection::Collect do
+  include ArrayCollection::Helper
 
   describe "#all" do
     it "returns all items" do

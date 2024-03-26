@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module Collection
+module ArrayCollection
   class UnsupportedOperator < ArgumentError; end
 
   # filterable item using operators

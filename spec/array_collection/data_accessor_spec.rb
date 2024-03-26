@@ -2,7 +2,7 @@
 
 require "spec_helper"
 
-RSpec.describe Collection::DataAccessor do
+RSpec.describe ArrayCollection::DataAccessor do
   describe ".get" do
     let(:data) do
       {

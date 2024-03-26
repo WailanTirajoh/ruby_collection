@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module Collection
+module ArrayCollection
   # Data retreiver based on string dot notation
   class DataAccessor
     class << self

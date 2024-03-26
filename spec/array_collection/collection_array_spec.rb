@@ -2,7 +2,7 @@
 
 require "spec_helper"
 
-RSpec.describe Collection::CollectionArray do
+RSpec.describe ArrayCollection::CollectionArray do
   describe ".where" do
     context "with an correct number of arguments" do
       it "filters array based on key-value equality" do

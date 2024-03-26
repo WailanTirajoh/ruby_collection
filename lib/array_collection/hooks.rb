@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module Collection
+module ArrayCollection
   # Internal hooks
   module Hooks
     def before(method_to_hook, before_method)

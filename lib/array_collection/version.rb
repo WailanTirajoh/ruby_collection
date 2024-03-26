@@ -1,5 +1,5 @@
 # frozen_string_literal: true
 
-module Collection
+module ArrayCollection
   VERSION = "0.2.7"
 end

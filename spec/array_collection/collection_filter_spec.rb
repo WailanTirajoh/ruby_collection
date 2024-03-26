@@ -2,7 +2,7 @@
 
 require "spec_helper"
 
-RSpec.describe Collection::CollectionFilter do
+RSpec.describe ArrayCollection::CollectionFilter do
   describe ".apply_operator" do
     context "when given a valid operator" do
       it "applies the equality operator correctly" do

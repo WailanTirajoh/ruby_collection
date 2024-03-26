@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
 require_relative "simplecov_helper"
-require "collection"
-require "collection/data_accessor"
-require "collection/collection_array"
+require "array_collection"
+require "array_collection/data_accessor"
+require "array_collection/collection_array"
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure

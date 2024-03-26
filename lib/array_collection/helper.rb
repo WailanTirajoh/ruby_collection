@@ -2,13 +2,13 @@
 
 require_relative "collect"
 
-module Collection
+module ArrayCollection
   # Expose collect
   module Helper
     module_function
 
     def collect(values)
-      Collection::Collect.new(values)
+      ArrayCollection::Collect.new(values)
     end
   end
 end

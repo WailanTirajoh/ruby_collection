@@ -31,3 +31,5 @@ jobs:
       - name: Push to rubygems.org
         run: |
           bundle exec gem release
+        env:
+          RUBYGEMS_API_KEY: ${{ secrets.RUBYGEM_API_KEY }}

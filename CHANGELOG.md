@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.2.10](https://github.com/WailanTirajoh/ruby_collection/compare/v0.2.9...v0.2.10) (2024-03-26)
+
+
+### Bug Fixes
+
+* **gem:** remove required mfa ([7b4b9c4](https://github.com/WailanTirajoh/ruby_collection/commit/7b4b9c432002ff4381da0004d3ad4d6912b8b2d8))
+* **gem:** remove required mfa ([d342636](https://github.com/WailanTirajoh/ruby_collection/commit/d3426369e6f1dff96abc568689fc9ec4381967f1))
+
+
+
 ## [0.2.9](https://github.com/WailanTirajoh/ruby_collection/compare/v0.2.8...v0.2.9) (2024-03-26)
 
 

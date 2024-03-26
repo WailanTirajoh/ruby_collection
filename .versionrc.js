@@ -1,5 +1,5 @@
 const version_rb = {
-  filename: "lib/collection/version.rb",
+  filename: "lib/array_collection/version.rb",
   updater: {
     readVersion: function (contents) {
       const match = contents.match(/^\s*VERSION = ["'](.+)["']$/m);

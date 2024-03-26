@@ -28,6 +28,9 @@ jobs:
           git push --follow-tags
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Install deps
+        run: |
+          bundle install
       - name: Push to rubygems.org
         run: |
           bundle exec gem release

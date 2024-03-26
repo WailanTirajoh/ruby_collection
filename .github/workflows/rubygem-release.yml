@@ -1,10 +1,6 @@
 name: Rubygem Release
 
 on:
-  # Testing purposes, remove latter
-  pull_request:
-    branches:
-      - main
   workflow_dispatch:
 
 jobs:

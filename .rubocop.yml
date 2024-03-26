@@ -23,3 +23,6 @@ Metrics/BlockLength:
 
 RSpec/ExampleLength:
   Enabled: false
+
+Gemspec/RequireMFA:
+  Enabled: false

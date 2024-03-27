@@ -13,9 +13,20 @@ RSpec.describe ArrayCollection::Collect do
   end
 
   describe "#count" do
-    it "returns the number of items" do
-      items = [0, 1, 2, 3, 4]
-      expect(collect(items).count).to eq(5)
+    context "when using an array" do
+      let(:items) { [0, 1, 2, 3, 4] }
+
+      it "returns the number of items" do
+        expect(collect(items).count).to eq(5)
+      end
+    end
+
+    context "when using an array of hashes" do
+      let(:items) { [{ name: "John", age: 30 }, { name: "Jane", age: 25 }] }
+
+      it "returns the count of items matching the block condition" do
+        expect(collect(items).count { |item| item[:age] > 28 }).to eq(1)
+      end
     end
   end
 

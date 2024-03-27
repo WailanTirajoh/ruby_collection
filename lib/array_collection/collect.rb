@@ -16,8 +16,8 @@ module ArrayCollection
       @items
     end
 
-    def count
-      @items.count
+    def count(&block)
+      @items.count(&block)
     end
 
     def uniq

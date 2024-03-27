@@ -12,6 +12,13 @@ RSpec.describe ArrayCollection::Collect do
     end
   end
 
+  describe "#count" do
+    it "returns the number of items" do
+      items = [0, 1, 2, 3, 4]
+      expect(collect(items).count).to eq(5)
+    end
+  end
+
   describe "#filter" do
     it "filters items based on the given block" do
       items = [1, 2, 3, 4, 5]

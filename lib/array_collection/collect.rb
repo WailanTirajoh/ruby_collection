@@ -20,6 +20,10 @@ module ArrayCollection
       @items.count
     end
 
+    def uniq
+      self.class.new(@items.uniq)
+    end
+
     def filter(&block)
       self.class.new(ArrayCollection::CollectionArray.filter(@items, &block))
     end

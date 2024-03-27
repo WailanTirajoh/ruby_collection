@@ -19,6 +19,13 @@ RSpec.describe ArrayCollection::Collect do
     end
   end
 
+  describe "#uniq" do
+    it "returns the unique value of items" do
+      items = [0, 0, 1, 2, 2, 3, 4, 2]
+      expect(collect(items).uniq.all).to eq([0, 1, 2, 3, 4])
+    end
+  end
+
   describe "#filter" do
     it "filters items based on the given block" do
       items = [1, 2, 3, 4, 5]

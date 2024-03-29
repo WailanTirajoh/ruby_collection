@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+# [0.3.0](https://github.com/WailanTirajoh/ruby_collection/compare/v0.2.8...v0.3.0) (2024-03-29)
+
+
+### Features
+
+* **collect:** count ([7620a62](https://github.com/WailanTirajoh/ruby_collection/commit/7620a62bb6260e36210290a73f4083db533107b3))
+* **collect:** uniq ([59a5c53](https://github.com/WailanTirajoh/ruby_collection/commit/59a5c53f2de89ea1d3099c726e7abaffffcf78bc))
+* **collect:** uniq with block ([5fab50e](https://github.com/WailanTirajoh/ruby_collection/commit/5fab50e82775f67397cc0257aa1333c88483c30f))
+* **rubocop-performance:** init & fix rubocop perf ([fa91115](https://github.com/WailanTirajoh/ruby_collection/commit/fa91115f40a5179957f5361d34a9d378c6bd7a0a))
+
+
+
 ## [0.2.8](https://github.com/WailanTirajoh/ruby_collection/compare/v0.2.14...v0.2.8) (2024-03-26)
 
 ### Bug Fixes

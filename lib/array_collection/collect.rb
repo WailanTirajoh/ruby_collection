@@ -120,7 +120,7 @@ module ArrayCollection
     end
 
     def check_hash_item
-      raise ArgumentError, "Input must be an array of hashes" unless @items.all? { |item| item.is_a?(Hash) }
+      raise ArgumentError, "Input must be an array of hashes" unless @items.all?(Hash)
     end
 
     # Hooks

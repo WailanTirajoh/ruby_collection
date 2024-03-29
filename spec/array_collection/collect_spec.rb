@@ -134,7 +134,7 @@ RSpec.describe ArrayCollection::Collect do
   describe "#sort" do
     it "sorts items in ascending order based on provided block" do
       items = [5, 3, 1, 4, 2]
-      result = collect(items).sort { |a, b| a <=> b }.all
+      result = collect(items).sort.all
       expect(result).to eq([1, 2, 3, 4, 5])
     end
   end

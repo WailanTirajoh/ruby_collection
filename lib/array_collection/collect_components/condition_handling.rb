@@ -9,6 +9,12 @@ module ArrayCollection
 
         yield(self)
       end
+
+      def unless(boolean)
+        return self if boolean == true
+
+        yield(self)
+      end
     end
   end
 end

@@ -498,10 +498,10 @@ RSpec.describe ArrayCollection::Collect do
                .all
 
       expected_result = [
-        { a: 0, b: 2, c: 2, x: [] },
-        { a: 2, b: 3, c: 5, x: [2, 3] },
-        { a: 3, b: 1, c: 4, x: [1, 2, 3] },
-        { a: 4, b: 2, c: 6, x: [] }
+        { "a" => 0, "b" => 2, "c" => 2, "x" => [] },
+        { "a" => 2, "b" => 3, "c" => 5, "x" => [2, 3] },
+        { "a" => 3, "b" => 1, "c" => 4, "x" => [1, 2, 3] },
+        { "a" => 4, "b" => 2, "c" => 6, "x" => [] }
       ]
 
       expect(result).to eq(expected_result)

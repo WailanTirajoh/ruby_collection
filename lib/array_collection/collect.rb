@@ -2,18 +2,20 @@
 
 require_relative "collection_array"
 require_relative "hooks"
+require_relative "json_parser"
 
 module ArrayCollection
   # Set of chainable collections
-  class Collect
+  class Collect # rubocop:disable Metrics/ClassLength
     extend ArrayCollection::Hooks
 
     def initialize(items)
-      @items = get_arrayable_items(items)
+      parsed_hash = parse_input(items)
+      @items, @is_json = get_arrayable_items(parsed_hash)
     end
 
     def all
-      @items
+      parse_output(@items)
     end
 
     def count(&block)
@@ -41,7 +43,7 @@ module ArrayCollection
     end
 
     def key_by(key, &block)
-      ArrayCollection::CollectionArray.key_by(@items, key, &block)
+      ArrayCollection::CollectionArray.key_by(@items, key.to_sym, &block)
     end
 
     def sort(&block)
@@ -53,7 +55,7 @@ module ArrayCollection
     end
 
     def sort_by_key(key)
-      self.class.new(@items.sort_by { |item| item[key] })
+      self.class.new(@items.sort_by { |item| item[key.to_sym] })
     end
 
     def append(value)
@@ -75,11 +77,11 @@ module ArrayCollection
     end
 
     def only(*keys)
-      self.class.new(ArrayCollection::CollectionArray.only(@items, *keys))
+      self.class.new(ArrayCollection::CollectionArray.only(@items, *keys.map(&:to_sym)))
     end
 
     def except(*keys)
-      self.class.new(ArrayCollection::CollectionArray.except(@items, *keys))
+      self.class.new(ArrayCollection::CollectionArray.except(@items, *keys.map(&:to_sym)))
     end
 
     def diff(items)
@@ -107,6 +109,24 @@ module ArrayCollection
     end
 
     private
+
+    def json?
+      @is_json
+    end
+
+    def parse_input(items)
+      is_json = ArrayCollection::JsonParser.json_like?(items)
+      result = is_json ? ArrayCollection::JsonParser.parse_to_hash(items) : items
+      [get_arrayable_items(result), is_json]
+    end
+
+    def parse_output(items)
+      if @input_is_json_like
+        ArrayCollection::JsonParser.parse_to_json(items)
+      else
+        items
+      end
+    end
 
     def get_arrayable_items(items)
       case items

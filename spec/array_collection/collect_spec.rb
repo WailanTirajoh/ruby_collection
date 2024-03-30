@@ -109,8 +109,8 @@ RSpec.describe ArrayCollection::Collect do
 
         result = collect(records).key_by("badgenumber") do |record|
           {
-            "first_checkin" => record["first_checkin"],
-            "last_checkout" => record["last_checkout"]
+            "first_checkin" => record[:first_checkin],
+            "last_checkout" => record[:last_checkout]
           }
         end
 
@@ -465,6 +465,46 @@ RSpec.describe ArrayCollection::Collect do
           { a: 4, b: 2, c: 6, x: [] }
         ]
       )
+    end
+  end
+
+  context "when it chained with JSON input" do
+    let(:json_items) do
+      [
+        { "a" => 3, "b" => 1, "x" => [1, 2, 3] },
+        { "a" => 1, "b" => 2, "x" => [] },
+        { "a" => 2, "b" => 3, "x" => [2, 3] },
+        nil
+      ]
+    end
+
+    it "returns correct output" do
+      json_input = json_items
+
+      result = collect(json_input)
+               .where_not_nil
+               .where(:a, ">", 1)
+               .append({ "a" => 0, "b" => 2 })
+               .prepend({ "a" => 4, "b" => 2 })
+               .sort_by_key(:a)
+               .map do |item|
+                 {
+                   a: item[:a],
+                   b: item[:b],
+                   c: item[:a] + item[:b],
+                   x: collect(item[:x]).sort.all
+                 }
+               end
+               .all
+
+      expected_result = [
+        { a: 0, b: 2, c: 2, x: [] },
+        { a: 2, b: 3, c: 5, x: [2, 3] },
+        { a: 3, b: 1, c: 4, x: [1, 2, 3] },
+        { a: 4, b: 2, c: 6, x: [] }
+      ]
+
+      expect(result).to eq(expected_result)
     end
   end
 end

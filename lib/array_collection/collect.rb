@@ -2,18 +2,20 @@
 
 require_relative "collection_array"
 require_relative "hooks"
+require_relative "json_parser"
 
 module ArrayCollection
   # Set of chainable collections
-  class Collect
+  class Collect # rubocop:disable Metrics/ClassLength
     extend ArrayCollection::Hooks
 
     def initialize(items)
-      @items = get_arrayable_items(items)
+      parsed_hash = parse(items)
+      @items, @is_json = get_arrayable_items(parsed_hash)
     end
 
     def all
-      @items
+      parse_output(@items)
     end
 
     def count(&block)
@@ -21,19 +23,19 @@ module ArrayCollection
     end
 
     def uniq
-      self.class.new(@items.uniq)
+      clone(@items.uniq)
     end
 
     def filter(&block)
-      self.class.new(ArrayCollection::CollectionArray.filter(@items, &block))
+      clone(ArrayCollection::CollectionArray.filter(@items, &block))
     end
 
     def where(key, *args)
-      self.class.new(ArrayCollection::CollectionArray.where(@items, key, *args))
+      clone(ArrayCollection::CollectionArray.where(@items, key, *args))
     end
 
     def where_not_nil
-      self.class.new(ArrayCollection::CollectionArray.where_not_nil(@items))
+      clone(ArrayCollection::CollectionArray.where_not_nil(@items))
     end
 
     def index_of(value)
@@ -41,31 +43,31 @@ module ArrayCollection
     end
 
     def key_by(key, &block)
-      ArrayCollection::CollectionArray.key_by(@items, key, &block)
+      ArrayCollection::CollectionArray.key_by(@items, key.to_sym, &block)
     end
 
     def sort(&block)
-      self.class.new(@items.sort(&block))
+      clone(@items.sort(&block))
     end
 
     def sort_desc(&block)
-      self.class.new(@items.sort(&block).reverse)
+      clone(@items.sort(&block).reverse)
     end
 
     def sort_by_key(key)
-      self.class.new(@items.sort_by { |item| item[key] })
+      clone(@items.sort_by { |item| item[key.to_sym] })
     end
 
     def append(value)
-      self.class.new(ArrayCollection::CollectionArray.append(@items, value))
+      clone(ArrayCollection::CollectionArray.append(@items, value))
     end
 
     def prepend(value)
-      self.class.new(ArrayCollection::CollectionArray.prepend(@items, value))
+      clone(ArrayCollection::CollectionArray.prepend(@items, value))
     end
 
     def map(&block)
-      self.class.new(ArrayCollection::CollectionArray.map(@items, &block))
+      clone(ArrayCollection::CollectionArray.map(@items, &block))
     end
 
     def when(boolean)
@@ -75,38 +77,56 @@ module ArrayCollection
     end
 
     def only(*keys)
-      self.class.new(ArrayCollection::CollectionArray.only(@items, *keys))
+      clone(ArrayCollection::CollectionArray.only(@items, *keys.map(&:to_sym)))
     end
 
     def except(*keys)
-      self.class.new(ArrayCollection::CollectionArray.except(@items, *keys))
+      clone(ArrayCollection::CollectionArray.except(@items, *keys.map(&:to_sym)))
     end
 
     def diff(items)
-      self.class.new(ArrayCollection::CollectionArray.diff(@items, items))
+      clone(ArrayCollection::CollectionArray.diff(@items, items))
     end
 
     def inner_join(items, left_key, right_key)
-      self.class.new(ArrayCollection::CollectionArray.inner_join(@items, get_arrayable_items(items), left_key,
-                                                                 right_key))
+      clone(ArrayCollection::CollectionArray.inner_join(@items, get_arrayable_items(items), left_key, right_key))
     end
 
     def left_join(items, left_key, right_key)
-      self.class.new(ArrayCollection::CollectionArray.left_join(@items, get_arrayable_items(items), left_key,
-                                                                right_key))
+      clone(ArrayCollection::CollectionArray.left_join(@items, get_arrayable_items(items), left_key, right_key))
     end
 
     def right_join(items, left_key, right_key)
-      self.class.new(ArrayCollection::CollectionArray.right_join(@items, get_arrayable_items(items), left_key,
-                                                                 right_key))
+      clone(ArrayCollection::CollectionArray.right_join(@items, get_arrayable_items(items), left_key, right_key))
     end
 
     def full_join(items, left_key, right_key)
-      self.class.new(ArrayCollection::CollectionArray.full_join(@items, get_arrayable_items(items), left_key,
-                                                                right_key))
+      clone(ArrayCollection::CollectionArray.full_join(@items, get_arrayable_items(items), left_key, right_key))
     end
 
     private
+
+    def clone(result)
+      self.class.new(parse_output(result))
+    end
+
+    def json?
+      @is_json
+    end
+
+    def parse(items)
+      is_json = ArrayCollection::JsonParser.json_like?(items)
+      result = is_json ? ArrayCollection::JsonParser.parse_to_hash(items) : items
+      [get_arrayable_items(result), is_json]
+    end
+
+    def parse_output(items)
+      if json?
+        ArrayCollection::JsonParser.parse_to_json(items)
+      else
+        items
+      end
+    end
 
     def get_arrayable_items(items)
       case items

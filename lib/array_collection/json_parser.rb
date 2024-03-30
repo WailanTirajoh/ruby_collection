@@ -14,8 +14,10 @@ module ArrayCollection
       end
 
       def parse_to_json(hashes)
-        hashes.map(&:deep_stringify_keys)
+        hashes.map { |hash| deep_stringify_keys(hash) }
       end
+
+      private
 
       def deep_string_to_symbol(hash)
         return hash unless hash.is_a?(Hash)
@@ -23,6 +25,14 @@ module ArrayCollection
         hash.each_with_object({}) do |(key, value), result|
           new_key = key.is_a?(String) ? key.to_sym : key
           result[new_key] = deep_string_to_symbol(value)
+        end
+      end
+
+      def deep_stringify_keys(hash)
+        hash.each_with_object({}) do |(key, value), result|
+          new_key = key.to_s
+          new_value = value.is_a?(Hash) ? deep_stringify_keys(value) : value
+          result[new_key] = new_value
         end
       end
     end

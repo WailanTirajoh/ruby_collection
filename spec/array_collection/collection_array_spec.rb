@@ -245,24 +245,6 @@ RSpec.describe ArrayCollection::CollectionArray do
   end
 
   describe ".inner_join" do
-    let(:left_items) do
-      [
-        { id: 1, name: "Alice" },
-        { id: 2, name: "Bob" }
-      ]
-    end
-    let(:right_items) do
-      [
-        { id: 2, age: 30 },
-        { id: 3, age: 25 }
-      ]
-    end
-
-    it "returns the inner join of two arrays based on the specified keys" do
-      result = described_class.inner_join(left_items, right_items, :id, :id)
-      expect(result).to contain_exactly({ id: 2, name: "Bob", age: 30 })
-    end
-
     context "with multiple matching items" do
       let(:left_items) do
         [
@@ -287,11 +269,31 @@ RSpec.describe ArrayCollection::CollectionArray do
         )
       end
     end
+
+    context "with no matching items" do
+      let(:left_items) { [{ id: 1, name: "Alice" }] }
+      let(:right_items) { [{ id: 2, age: 30 }] }
+
+      it "returns an empty array when there are no matching items" do
+        result = described_class.inner_join(left_items, right_items, :id, :id)
+        expect(result).to be_empty
+      end
+    end
   end
 
   describe ".join" do
-    let(:left_items) { [{ id: 1, name: "Alice" }, { id: 2, name: "Bob" }] }
-    let(:right_items) { [{ id: 2, age: 30 }, { id: 3, age: 25 }] }
+    let(:left_items) do
+      [
+        { id: 1, name: "Alice" },
+        { id: 2, name: "Bob" }
+      ]
+    end
+    let(:right_items) do
+      [
+        { id: 2, age: 30 },
+        { id: 3, age: 25 }
+      ]
+    end
 
     it "calls join method with the correct arguments" do
       allow(described_class).to receive(:inner_join).and_return([])
@@ -303,114 +305,160 @@ RSpec.describe ArrayCollection::CollectionArray do
   end
 
   describe ".left_join" do
-    let(:left_items) do
-      [
-        { id: 1, name: "Alice" },
-        { id: 2, name: "Bob" },
-        { id: 3, name: "Charlie" }
-      ]
+    context "with multiple matching items" do
+      let(:left_items) do
+        [
+          { id: 1, name: "Alice" },
+          { id: 2, name: "Bob" },
+          { id: 3, name: "Charlie" }
+        ]
+      end
+
+      let(:right_items) do
+        [
+          { user_id: 1, age: 30 },
+          { user_id: 2, age: 25 },
+          { user_id: 4, age: 40 }
+        ]
+      end
+
+      it "joins two arrays of hashes by specified keys" do
+        result = described_class.left_join(left_items, right_items, :id, :user_id)
+        expect(result).to contain_exactly(
+          { id: 1, name: "Alice", user_id: 1, age: 30 },
+          { id: 2, name: "Bob", user_id: 2, age: 25 },
+          { id: 3, name: "Charlie", user_id: nil, age: nil } # No matching entry in right_items, so attributes set to nil
+        )
+      end
     end
 
-    let(:right_items) do
-      [
-        { user_id: 1, age: 30 },
-        { user_id: 2, age: 25 },
-        { user_id: 4, age: 40 }
-      ]
-    end
+    context "with no matching items" do
+      let(:left_items) { [{ id: 1, name: "Alice" }] }
+      let(:right_items) { [{ user_id: 2, age: 30 }] }
 
-    it "joins two arrays of hashes by specified keys" do
-      result = described_class.left_join(left_items, right_items, :id, :user_id)
+      it "returns all items from the left array when there are no matching items in the right array" do
+        result = described_class.left_join(left_items, right_items, :id, :user_id)
+        expect(result).to contain_exactly({ id: 1, name: "Alice", user_id: nil, age: nil })
+      end
 
-      expect(result).to contain_exactly(
-        { id: 1, name: "Alice", user_id: 1, age: 30 },
-        { id: 2, name: "Bob", user_id: 2, age: 25 },
-        { id: 3, name: "Charlie", user_id: nil, age: nil } # No matching entry in right_items, so attributes set to nil
-      )
-    end
-
-    it "handles right items with no matching left items" do
-      result = described_class.left_join([], right_items, :id, :user_id)
-      expect(result).to eq([])
+      it "returns empty when there's no items on the left" do
+        result = described_class.left_join([], right_items, :id, :user_id)
+        expect(result).to be_empty
+      end
     end
   end
 
   describe ".right_join" do
-    let(:left_array) do
-      [
-        { id: 1, name: "Alice" },
-        { id: 2, name: "Bob" },
-        { id: 3, name: "Charlie" }
-      ]
+    context "with multiple matching items" do
+      let(:left_array) do
+        [
+          { id: 1, name: "Alice" },
+          { id: 2, name: "Bob" },
+          { id: 3, name: "Charlie" }
+        ]
+      end
+
+      let(:right_array) do
+        [
+          { user_id: 1, age: 30 },
+          { user_id: 2, age: 25 },
+          { user_id: 4, age: 40 }
+        ]
+      end
+
+      it "joins two arrays of hashes by specified keys" do
+        result = described_class.right_join(left_array, right_array, :id, :user_id)
+
+        expect(result).to contain_exactly(
+          { id: 1, name: "Alice", user_id: 1, age: 30 },
+          { id: 2, name: "Bob", user_id: 2, age: 25 },
+          { id: nil, name: nil, user_id: 4, age: 40 } # No matching entry in right_items, so attributes set to nil
+        )
+      end
     end
 
-    let(:right_array) do
-      [
-        { user_id: 1, age: 30 },
-        { user_id: 2, age: 25 },
-        { user_id: 4, age: 40 }
-      ]
-    end
+    context "with no matching items" do
+      let(:left_items) { [{ id: 1, name: "Alice" }] }
+      let(:right_items) { [{ user_id: 2, age: 30 }] }
 
-    it "joins two arrays of hashes by specified keys" do
-      result = described_class.right_join(left_array, right_array, :id, :user_id)
-
-      expect(result).to contain_exactly(
-        { user_id: 1, age: 30, id: 1, name: "Alice" },
-        { user_id: 2, age: 25, id: 2, name: "Bob" },
-        { user_id: 4, age: 40, id: nil, name: nil } # No matching entry in right_items, so attributes set to nil
-      )
+      it "returns all items from the right array when there are no matching items in the left array" do
+        result = described_class.right_join(left_items, right_items, :id, :user_id)
+        expect(result).to contain_exactly(
+          { id: nil, name: nil, user_id: 2, age: 30 }
+        )
+      end
     end
   end
 
   describe ".full_join" do
-    let(:left_items) do
-      [
-        { id: 1, name: "Alice" },
-        { id: 2, name: "Bob" },
-        { id: 3, name: "Charlie" }
-      ]
+    context "with multiple matching items" do
+      let(:left_items) do
+        [
+          { id: 1, name: "Alice" },
+          { id: 2, name: "Bob" },
+          { id: 3, name: "Charlie" }
+        ]
+      end
+
+      let(:right_items) do
+        [
+          { user_id: 1, age: 30 },
+          { user_id: 2, age: 25 },
+          { user_id: 4, age: 40 }
+        ]
+      end
+
+      it "performs a full outer join on two arrays of hashes by specified keys" do
+        result = described_class.full_join(left_items, right_items, :id, :user_id)
+
+        expect(result).to contain_exactly(
+          { id: 1, name: "Alice", user_id: 1, age: 30 },
+          { id: 2, name: "Bob", user_id: 2, age: 25 },
+          { id: 3, name: "Charlie", user_id: nil, age: nil }, # Non-matching left item attributes set to nil
+          { id: nil, name: nil, user_id: 4, age: 40 } # Non-matching right item attributes set to nil
+        )
+      end
     end
 
-    let(:right_items) do
-      [
-        { user_id: 1, age: 30 },
-        { user_id: 2, age: 25 },
-        { user_id: 4, age: 40 }
-      ]
+    context "with no matching items" do
+      let(:left_items) { [{ id: 1, name: "Alice" }] }
+      let(:right_items) { [{ user_id: 2, age: 30 }] }
+
+      it "returns all items from both arrays when there are no matching items" do
+        result = described_class.full_join(left_items, right_items, :id, :user_id)
+        expect(result).to contain_exactly(
+          { id: 1, name: "Alice", user_id: nil, age: nil },
+          { id: nil, name: nil, user_id: 2, age: 30 }
+        )
+      end
     end
 
-    it "performs a full outer join on two arrays of hashes by specified keys" do
-      result = described_class.full_join(left_items, right_items, :id, :user_id)
+    context "with mixed matching items" do
+      let(:left_items) do
+        [
+          { id: 1, name: "Alice" },
+          { id: 2, name: "Bob" },
+          { id: 5, name: "John" }
+        ]
+      end
+      let(:right_items) do
+        [
+          { user_id: 3, age: 30 },
+          { user_id: 4, age: 25 },
+          { user_id: 5, age: 25 }
+        ]
+      end
 
-      expect(result).to contain_exactly(
-        { id: 1, name: "Alice", user_id: 1, age: 30 },
-        { id: 2, name: "Bob", user_id: 2, age: 25 },
-        { id: 3, name: "Charlie", user_id: nil, age: nil }, # Non-matching left item attributes set to nil
-        { user_id: 4, age: 40, id: nil, name: nil } # Non-matching right item attributes set to nil
-      )
-    end
-
-    it "returns all items from both arrays when there are no matching keys" do
-      left_items = [
-        { id: 1, name: "Alice" },
-        { id: 2, name: "Bob" },
-        { id: 5, name: "John" }
-      ]
-      right_items = [
-        { user_id: 3, age: 30 },
-        { user_id: 4, age: 25 },
-        { user_id: 5, age: 25 }
-      ]
-
-      result = described_class.full_join(left_items, right_items, :id, :user_id)
-      expect(result).to contain_exactly(
-        { id: 1, name: "Alice", user_id: nil, age: nil }, # Non-matching left item attributes set to nil
-        { id: 2, name: "Bob", user_id: nil, age: nil }, # Non-matching left item attributes set to nil
-        { id: 5, name: "John", user_id: 5, age: 25 },
-        { user_id: 3, age: 30, id: nil, name: nil }, # Non-matching right item attributes set to nil
-        { user_id: 4, age: 25, id: nil, name: nil } # Non-matching right item attributes set to nil
-      )
+      it "returns all items from both arrays when there are no matching keys" do
+        result = described_class.full_join(left_items, right_items, :id, :user_id)
+        expect(result).to contain_exactly(
+          { id: 1, name: "Alice", user_id: nil, age: nil }, # Non-matching left item attributes set to nil
+          { id: 2, name: "Bob", user_id: nil, age: nil }, # Non-matching left item attributes set to nil
+          { id: 5, name: "John", user_id: 5, age: 25 },
+          { id: nil, name: nil, user_id: 3, age: 30 }, # Non-matching right item attributes set to nil
+          { id: nil, name: nil, user_id: 4, age: 25 } # Non-matching right item attributes set to nil
+        )
+      end
     end
   end
 

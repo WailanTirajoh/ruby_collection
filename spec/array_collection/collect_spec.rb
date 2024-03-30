@@ -203,6 +203,28 @@ RSpec.describe ArrayCollection::Collect do
     end
   end
 
+  describe "#unless" do
+    context "when the condition is false" do
+      it "yields to the block" do
+        items = [1, 2, 3, 4, 5]
+        result = collect(items).unless(false) do |collection|
+          collection.filter { |item| item > 2 }
+        end
+        expect(result.all).to eq([3, 4, 5])
+      end
+    end
+
+    context "when the condition is true" do
+      it "does not yield to the block" do
+        items = [1, 2, 3, 4, 5]
+        result = collect(items).unless(true) do |collection|
+          collection.filter { |item| item > 2 }
+        end
+        expect(result.all).to eq([1, 2, 3, 4, 5])
+      end
+    end
+  end
+
   describe "#only" do
     it "returns a new collection with items containing only specified keys" do
       items = [

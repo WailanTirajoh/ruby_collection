@@ -327,7 +327,7 @@ RSpec.describe ArrayCollection::CollectionArray do
         expect(result).to contain_exactly(
           { id: 1, name: "Alice", user_id: 1, age: 30 },
           { id: 2, name: "Bob", user_id: 2, age: 25 },
-          { id: 3, name: "Charlie", user_id: nil, age: nil } # No matching entry in right_items, so attributes set to nil
+          { id: 3, name: "Charlie", user_id: nil, age: nil }
         )
       end
     end

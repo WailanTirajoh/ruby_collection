@@ -474,4 +474,28 @@ RSpec.describe ArrayCollection::CollectionArray do
       expect(described_class).to have_received(:full_join).with(left_items, right_items, :id, :id)
     end
   end
+
+  describe ".cross_join" do
+    it "returns the cross joined matrix for a single array" do
+      matrix = described_class.cross_join([1, 2], %w[a b])
+      expected_result = [
+        [1, "a"],
+        [1, "b"],
+        [2, "a"],
+        [2, "b"]
+      ]
+      expect(matrix).to eq(expected_result)
+    end
+
+    it "returns the cross joined matrix for hashes" do
+      matrix = described_class.cross_join([{ a: 1 }, { b: 2 }], [{ x: "X" }, { y: "Y" }])
+      expected_result = [
+        { a: 1, x: "X" },
+        { a: 1, y: "Y" },
+        { b: 2, x: "X" },
+        { b: 2, y: "Y" }
+      ]
+      expect(matrix).to eq(expected_result)
+    end
+  end
 end

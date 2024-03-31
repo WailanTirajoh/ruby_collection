@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.3.1](https://github.com/WailanTirajoh/ruby_collection/compare/v0.3.0...v0.3.1) (2024-03-31)
+
+
+### Bug Fixes
+
+* **lint:** use described_class ([afba961](https://github.com/WailanTirajoh/ruby_collection/commit/afba961936538978109642db7c582a5746bbd5ea))
+
+
+### Features
+
+* **contional:** #unless ([#12](https://github.com/WailanTirajoh/ruby_collection/issues/12)) ([5d141b3](https://github.com/WailanTirajoh/ruby_collection/commit/5d141b3aa05eef1d5649ae1cd3aae14215ec5e17))
+* **join:** cross join ([#14](https://github.com/WailanTirajoh/ruby_collection/issues/14)) ([9657d6b](https://github.com/WailanTirajoh/ruby_collection/commit/9657d6bab25af6d00b329bc6d72bc0b560846b5a))
+* **json:** allow string keys as input ([#10](https://github.com/WailanTirajoh/ruby_collection/issues/10)) ([4b47b1d](https://github.com/WailanTirajoh/ruby_collection/commit/4b47b1de2b5f3a7f0d35186321ecaa8adc4048bb))
+
+
+
 # [0.3.0](https://github.com/WailanTirajoh/ruby_collection/compare/v0.2.8...v0.3.0) (2024-03-29)
 
 

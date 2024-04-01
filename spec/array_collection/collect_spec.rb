@@ -147,6 +147,24 @@ RSpec.describe ArrayCollection::Collect do
     end
   end
 
+  describe "#sort_by" do
+    it "sorts items by the specified key" do
+      items = [
+        { a: 3, b: 1 },
+        { a: 1, b: 2 },
+        { a: 2, b: 3 }
+      ]
+      result = collect(items).sort_by { |item| item[:a] }.all
+      expect(result).to eq(
+        [
+          { a: 1, b: 2 },
+          { a: 2, b: 3 },
+          { a: 3, b: 1 }
+        ]
+      )
+    end
+  end
+
   describe "#sort_by_key" do
     it "sorts items by the specified key" do
       items = [

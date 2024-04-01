@@ -90,6 +90,10 @@ module ArrayCollection
       clone(@items.sort(&block).reverse)
     end
 
+    def sort_by(&block)
+      clone(@items.sort_by(&block))
+    end
+
     def sort_by_key(key)
       clone(@items.sort_by { |item| item[key.to_sym] })
     end
